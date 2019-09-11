@@ -1,0 +1,225 @@
+# ------------------------------------------------------------------ #
+# Chapter 1: Manipulating files and directories
+# ------------------------------------------------------------------ #
+
+
+# How can I copy files?
+cp seasonal/autumn.csv seasonal/winter.csv backup  #makes a copy of autumn and stores in directory backup
+
+
+# Moving and chanaging file's name
+mv autumn.csv winter.csv ..  # moves files autumn.csv and winter.csv into the above directory
+mv course.txt old-course.txt  # rename
+
+
+# How can I delete files?
+rm thesis.txt backup/thesis-2017-08.txt # removes both files
+
+
+# How can I create and delete directories?
+rmdir # need to delete all files in directory to remove it
+
+
+# ------------------------------------------------------------------ #
+# Chapter 2: Manipulating Data
+# ------------------------------------------------------------------ #
+# Use cat to print out contents of a file onto the command line
+cat someFile.txt
+
+
+# Use less to view a file's contents piece by piece
+less someFile.txt  # displays file page by page
+<spacebar>  # pressing spacebar goes to the next page
+q  #type q to quit
+less someFile.txt anotherFile.txt  # opens to files
+:n  # move to the next file
+:p  # go to the previous file
+:q  # quit
+
+
+# How can I look at the start of a file? We can do this in the shell using a command called head. 
+# As its name suggests, it prints the first few lines of a file (where "a few" means 10), so the command:
+head seasonal/summer.csv
+
+
+# use tab to complete commands. If file/path is ambiguous, it will display options if tabbed again
+
+
+# How can I control what commands do?
+# head will only display the first three lines of the file. If you run head -n 100, it will display the 
+# first 100 (assuming there are that many), and so on.
+head -n 3 seasonal/summer.csv
+
+
+# How can I list everything below a directory?
+# In order to see everything underneath a directory, no matter how deeply nested it is, you can give ls 
+# the flag -R (which means "recursive"). 
+ls -R
+ls -R -F  # prints a / after the name of every directory and a * after the name of every runnable program
+
+
+# How can I get help for a command?
+# To find out what commands do, people used to use the man command (short for "manual"). For example, 
+# the command man head
+
+
+# How can I select columns from a file?
+# head and tail let you select rows from a text file. If you want to select columns, you can use the command 
+# cut. It has several options (use man cut to explore them), but the most common is something like:
+cut -f 2-5,8 -d , values.csv
+# which means "select columns 2 through 5 and columns 8, using comma as the separator". cut uses -f 
+# (meaning "fields") to specify columns and -d (meaning "delimiter") to specify the separator. 
+
+
+# How can I repeat commands?
+# history will print a list of commands you have run recently. Each one is preceded by a serial number to make
+# it easy to re-run particular commands: just type !55 to re-run the 55th command in your history. You can 
+# also run the last line that was run by a command by putting ! in front of it, like !head or !cat
+
+
+# How can I select lines containing specific values?
+# head and tail select rows, cut selects columns, and grep selects lines according to what they contain. In its 
+# simplest form, grep takes a piece of text followed by one or more filenames and prints all of the lines in 
+# those files that contain that text
+# What's more important right now is some of grep's more common flags:
+grep
+-c: print a count of matching lines rather than the lines themselves
+-h: do not print the names of files when searching multiple files
+-i: ignore case (e.g., treat "Regression" and "regression" as matches)
+-l: print the names of files that contain matches, not the matches
+-n: print line numbers for matching lines
+-v: invert the match, i.e., only show lines that don't match
+
+
+# use paste to join columns of files
+paste -d , someFile.txt anotherFile.txt  # comma-delimited joins columns of the two files
+
+
+# ------------------------------------------------------------------ #
+# Chapter 3: Combining Tools
+# ------------------------------------------------------------------ #
+# How can I store a command's output in a file?
+head -n 5 seasonal/summer.csv > top.csv
+# nothing appears on the screen. Instead, head's output is put in a new file called top.csv
+
+
+# Using a pipe | to avoid intermediate files when using redirection from head and tail and to reproduce commands
+head -n 5 seasonal/summer.csv | tail -n 3
+# The pipe symbol tells the shell to use the output of the command on the left as the input to the command on the right.
+# You can just keep chaining commands with the pipe | to extend the pipeline
+
+
+# How can I count the records in a file?
+# The command wc (short for "word count") prints the number of characters, words, and lines in a file. 
+# You can make it print only one of these using -c, -w, or -l respectively.
+
+
+# How can I specify many files at once rather than just typing them out?
+# Use "wildcards" to specify files. Common wildcard is the *
+cut -d , -f 1 seasonal/*.csv
+
+
+# What other wildcards can I use?
+# The shell has other wildcards as well, though they are less commonly used:
+? matches a single character, so 201?.txt will match 2017.txt or 2018.txt, but not 2017-01.txt.
+[...] matches any one of the characters inside the square brackets, so 201[78].txt matches 2017.txt or 2018.txt, but not 2016.txt.
+{...} matches any of the comma-separated patterns inside the curly brackets, so {*.txt, *.csv} matches any file 
+	whose name ends with .txt or .csv, but not files whose names end with .pdf.
+
+
+# How can i sort lines of text?
+sort  # -r reverse order, -n sort numerically, -b ignore leading blanks, -f fold case (be case-sensitive)
+
+
+# use uniq command to remove adjacent repeated lines.  It doesn't find the unique lines if they aren't adjacent
+uniq # should sort a list first. Use -c to also display a count of number of times a unique line appears
+
+
+
+# ------------------------------------------------------------------ #
+# Chapter 4: Batch Processing
+# ------------------------------------------------------------------ #
+
+# How does the shell store info?
+# The shell uses environment variables. Use set to see which commands are available
+
+
+# How can I print a variable's value?
+# A simpler way to find a variable's value is to use a command called echo, which prints its arguments. 
+# To get the variable's value, you must put a dollar sign $ in front of it.
+
+
+# Shell Variables
+# This is like a local variable in a programming language. To create a shell variable, you simply assign 
+# a value to a name without any spaces before or after the = sign. To call what the varible holds use $ sign
+training=seasonal/summer.csv
+
+
+# How can I repeat a command many times?
+# Use loops.
+for filetype in gif jpg png; do echo $filetype; done
+for filename in seasonal/*.csv; do echo $filename; done  # repeat a command for files in directory seasonal
+# You can also store files in a directory to a shell variable and call it in a for loop later
+datasets=seasonal/*.csv
+for filename in $datasets; do echo $filename; done 
+for file in seasonal/*.csv; do head -n 2 $file | tail -n 1; done  # use a pipeline in a for loop
+for f in seasonal/*.csv; do echo $f; head -n 2 $f | tail -n 1; done # use semicolons in the "do" portion of the loop to use multiple commands in a loop
+
+
+
+# ------------------------------------------------------------------ #
+# Chapter 5: Creating new tools
+# ------------------------------------------------------------------ #
+
+
+# How can I edit a file?
+# Unix has plenty of text editors. One is nano. Use nano <filename> to create and edit a file. 
+nano myFile.txt  # creates a file
+Ctrl+O  # saves the file
+Ctrl+x  # closes the nano interface
+
+
+# How can I record what I just did?
+# 1. Run history.
+# 2. Pipe its output to tail -n 10 (or however many recent steps you want to save).
+# 3. Redirect that to a file called something like figure-5.history
+
+
+# How can I save commands to re-run later?
+# Create a file in a txt editor, like nano, and then use the command bash to run the file
+nano dates.sh  # opens the text editor
+bash dates.sh
+# You can add pipes into shell scrips (.sh for short, or rename to anything else you want)
+
+
+# Passing filenames to scripts
+# use the special expression $@ (dollar sign immediately followed by at-sign) to mean "all 
+# of the command-line parameters given to the script". For example, if unique-lines.sh contains this:
+sort $@ | uniq  # this is in the script unique-lines.sh
+bash unique-lines.sh seasonal/summer.csv seasonal/autumn.csv  # both files are processed
+
+
+# How can I process a single argument (getting input from user)?
+# As well as $@, the shell lets you use $1, $2, and so on to refer to specific command-line parameters.
+cut -d , -f $2 $1  # the first parameter, 1, is the filename the user will enter. The second parameter 
+						# is the column that is . (This is written in a script called column.sh)
+bash column.sh seasonal/autumn.csv 1  #notice how the script uses the two parameters in reverse order
+
+						
+
+# Creating longer scripts
+# You can make shell scripts with many lines. Note that in Nano, "copy and paste" is achieved by navigating 
+# to the line you want to copy, pressing CTRL + K to cut the line, then CTRL + U twice to paste two copies 
+# of it.
+
+
+# How can I write loops in a shell script?
+# Shell scripts can also contain loops. You can write them using semi-colons, or split them across lines 
+# without semi-colons to make them more readable:
+
+# Print the first and last data records of each file.
+for filename in $@
+do
+    head -n 2 $filename | tail -n 1
+    tail -n 1 $filename
+done
