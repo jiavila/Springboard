@@ -196,3 +196,14 @@ class DeepImageBuilder:
             return [data_sampled, labels_sampled, num_samples_dict, data_samples_removed, labels_samples_removed]
         else:
             return [data_sampled, labels_sampled, num_samples_dict]
+
+    @staticmethod
+    def plot_history(history, datagen):
+        """
+
+        :param history: keras.callbacks.callbacks.History object, output from keras.models.Model.fit_generator()
+        :param datagen: keras.preprocessing.image.ImageDataGenerator, the generator object that was used when fitting
+                        Model.fit_gerator(). Use this to get parameters.
+        :return:
+        """
+
