@@ -6,10 +6,10 @@ import pandas as pd
 
 class DeepImageBuilder:
     '''
-    A deep learning class for transfer learning using pre-built keras models from rgb images.
+        A deep learning class for transfer learning using pre-built keras models from rgb images.
     '''
-    def __init__(self, path_main):
-        self.PathMain = path_main  # the path to the directory where our data are stored
+    def __init__(self, paths_dict):
+        self.self.PathsDict = self.set_paths(self, paths_dict, nargout=1)  # set the dictionary of paths.
         self.DataTrain = np.empty(shape=(100, 10, 10, 1))  # initialize with empty numpy array
         self.DataTest = np.empty(shape=(10, 10, 10, 1))  # initialize with empty numpy array
         self.DataVal = np.empty(shape=(10, 10, 10, 1))  # validation data. this can be created with get_sample method
@@ -22,11 +22,31 @@ class DeepImageBuilder:
         self.EncoderTest = LabelEncoder()
         self.EncoderVal = LabelEncoder()
 
-    def set_paths(self, path_main):
-        if path_main:  # if the variable is empty
-            self.PathMain = 'C:\Users\jesus\Documents\Springboard\project_data\ddsm-mammography'  # default directory
+    def set_paths(self, paths_dict, nargout=0):
+        '''
+        Sets a dictionary that contains the absolute path of the main directory and its relative paths to the training,
+        validation, and test sets (data & labels).
+        :param paths_dict: Dict.
+            path_main: the absolute path of the main directory that contains all the data
+            path_data_train: relative path (from path_main) to the training images. Format should be numpy array (.npy).
+            path_labels_train: relative path to the training labels. Format should be numpy array (.npy)
+            path_data_test, path_labels_test, path_data_val, path_labels_val: similar to training paths. If not
+                available, set to ''
+        :param nargout: Int. Output paths_dict if nargout = 1 (after checking key names). Do a self update
+            (self.PathsDict) if 0.
+        :return:
+        '''
+        args = ('path_main', 'path_data_train', 'path_labels_train', 'path_data_test', 'path_labels_test',
+                'path_data_val', 'path_labels_val')
+        for key, value in paths_dict.items():
+            if not(key in args):
+                raise ValueError(key, 'Not recognized. path keys must be one of the following:', args)
+        if nargout == 0:
+            self.PathsDict = paths_dict
+        elif nargout == 1:
+            return paths_dict
         else:
-            self.PathMain = path_main
+            ValueError(nargout, 'must be int 0 or 1')
 
     def get_data(self):
         '''
