@@ -2,17 +2,11 @@
 # Importing
 # ************************************************************************* #
 import pandas as pd
-import numpy as np
-import os
-import keras
 import matplotlib.pyplot as plt
 from keras.layers import Dense, GlobalAveragePooling2D
 from keras.applications import inception_v3
-from keras.preprocessing import image
-from keras.applications.inception_v3 import preprocess_input
 from keras.preprocessing.image import ImageDataGenerator
 from keras.models import Model
-from keras.optimizers import Adam
 from deepimgbuilder import DeepImageBuilder
 import config as cfg
 
@@ -102,9 +96,8 @@ for idx in range(num_models):
     accur_val_df['model_' + str(idx)] = history.history['val_accuracy']
 
 # ************************************************************************* #
-# Plot our model accuracies and validation accuracies
+# Plot model accuracies
 # ************************************************************************* #
-# datagen has all the parameters of our x model
 textstr = '\n'.join((
     'Rotation range: ' + str(cfg.rotation_range),
     'Zoom range: ' + str(cfg.zoom_range),
@@ -116,10 +109,3 @@ textstr = '\n'.join((
     'Fill mode: ' + cfg.fill_mode))
 my_plot = accur_model_df.plot(title=textstr)
 plt.show()
-
-
-
-
-
-
-

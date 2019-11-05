@@ -24,7 +24,7 @@ class DeepImageBuilder:
 
     def set_paths(self, path_main):
         if path_main:  # if the variable is empty
-            self.PathMain = 'D:\Documents\Springboard\ProjectData\ddsm-mammography'  # default directory
+            self.PathMain = 'C:\Users\jesus\Documents\Springboard\project_data\ddsm-mammography'  # default directory
         else:
             self.PathMain = path_main
 
