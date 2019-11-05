@@ -6,10 +6,10 @@ import pandas as pd
 
 class DeepImageBuilder:
     '''
-    A deep learning class for transfer learning using pre-built keras models from images.
+    A deep learning class for transfer learning using pre-built keras models from rgb images.
     '''
     def __init__(self, path_main):
-        self.PathMain = path_main
+        self.PathMain = path_main  # the path to the directory where our data are stored
         self.DataTrain = np.empty(shape=(100, 10, 10, 1))  # initialize with empty numpy array
         self.DataTest = np.empty(shape=(10, 10, 10, 1))  # initialize with empty numpy array
         self.DataVal = np.empty(shape=(10, 10, 10, 1))  # validation data. this can be created with get_sample method
@@ -46,7 +46,8 @@ class DeepImageBuilder:
         '''
         Prepare data by converting images from gray scale NxNx1 to rgb NxNx3. This is done because the imported keras
         models were trained with rgb images.
-        :param data_choice: 'training' or 'test'
+        :param data_choice: a list that contains 'training', 'test', and/or 'validation'. Data preparation will apply
+                            to data stored in corresponding attributes.
         :return:
         '''
 
@@ -61,7 +62,7 @@ class DeepImageBuilder:
                                          "'validation'.")
 
         # *************************************************************#
-        # Get either the training or test data
+        # Get the corresponding data and training labels
         data_list = []
         labels_list = []
         data_choice_tracker = []
@@ -82,7 +83,7 @@ class DeepImageBuilder:
             print("Selected validation set to prep.")
 
         # *************************************************************#
-        # Loop through data lists and prepare each entry
+        # Loop through data lists and prepare data if it's needed
         for idx, choice in enumerate(data_choice_tracker):
 
             # *************************************************************#
@@ -147,7 +148,7 @@ class DeepImageBuilder:
     @staticmethod
     def get_sample(data, labels, percent, remove_samples):
         '''
-        Create a subsmaple of our data
+        Create a subsmaple of our data. This should be done before method DeepImageBuilder.prep_data() is called.
         :param data: DeepImageBuilder.Data
         :param labels: DeepImageBuilder.Labels, should be an Nx1 numpy array
         :param percent: int, the sample size percent

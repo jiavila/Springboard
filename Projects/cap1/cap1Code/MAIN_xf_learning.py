@@ -1,4 +1,3 @@
-# from here: https://towardsdatascience.com/keras-transfer-learning-for-beginners-6c9b8b7143e
 # ************************************************************************* #
 # Importing
 # ************************************************************************* #
@@ -15,20 +14,22 @@ from keras.preprocessing.image import ImageDataGenerator
 from keras.models import Model
 from keras.optimizers import Adam
 from deepimgbuilder import DeepImageBuilder
+import config as cfg
 
 
 # ************************************************************************* #
 # Loading and pre-process training data
 # ************************************************************************* #
 # this step was edited b/c we already have our images in a numpy array
-deep_ddsm = DeepImageBuilder(path_main='D:\Documents\Springboard\ProjectData\ddsm-mammography')
+deep_ddsm = DeepImageBuilder(path_main=cfg.path_main)
 deep_ddsm.get_data()
 
 # Get a subsample of the data and store in our object
-num_samples_training_dict = deep_ddsm.create_smaller_train_set(percent=50)
+num_samples_training_dict = deep_ddsm.create_smaller_train_set(percent=cfg.percent_train_set)
 
 # Get a validation set from sampled training set. This automatically removes these samples from our training set.
-num_samples_val_dict = deep_ddsm.create_val_set(percent=20)
+if cfg.create_val_set_bool:
+    num_samples_val_dict = deep_ddsm.create_val_set(percent=cfg.percent_val_set)
 
 
 # Prepare our data for processing
@@ -39,9 +40,8 @@ deep_ddsm.prep_data(data_choice=['training', 'validation'])
 val_set = (deep_ddsm.DataVal, deep_ddsm.LabelsVal)
 
 
-
 # ************************************************************************* #
-# Building the required model
+# Building the required model. Change later to import different learning model from config file
 # ************************************************************************* #
 base_model = inception_v3.InceptionV3(weights='imagenet', include_top=False)
 
@@ -50,7 +50,7 @@ x=GlobalAveragePooling2D()(x)
 x=Dense(1024,activation='relu')(x) #we add dense layers so that the model can learn more complex functions and classify for better results.
 x=Dense(1024,activation='relu')(x) #dense layer 2
 x=Dense(512,activation='relu')(x) #dense layer 3
-preds=Dense(5,activation='softmax')(x) #final layer with softmax activation. this is how many we categories we have.
+preds=Dense(cfg.num_classes,activation='softmax')(x) #final layer with softmax activation. this is how many we categories we have.
 
 # create a model based on our architecture
 # specify the inputs
@@ -72,13 +72,14 @@ for layer in model.layers[312:]:
 # ************************************************************************* #
 # Load data into ImageDataGenerator with parameters, compile, fit model. Do this N number of times
 # ************************************************************************* #
-# create dataframes that will have our information
+# create dataframes that will hold accuracy and validation accuracy information from each model that's built
 accur_model_df = pd.DataFrame()
 accur_val_df = pd.DataFrame()
-num_models = 10
-datagen = ImageDataGenerator(data_format='channels_last', rotation_range=20, zoom_range=0.15, width_shift_range=0.2,
-                             height_shift_range=0.2, shear_range=0.15, horizontal_flip=True, vertical_flip=True,
-                             fill_mode='nearest')
+num_models = cfg.num_models
+datagen = ImageDataGenerator(data_format=cfg.data_format, rotation_range=cfg.rotation_range, zoom_range=cfg.zoom_range,
+                             width_shift_range=cfg.width_shift_range, height_shift_range=cfg.height_shift_range,
+                             shear_range=cfg.shear_range, horizontal_flip=cfg.horizontal_flip,
+                             vertical_flip=cfg.vertical_flip, fill_mode=cfg.fill_mode)
 for idx in range(num_models):
     print("Creating model ", str(idx+1), " of ", str(num_models))
 
@@ -92,8 +93,9 @@ for idx in range(num_models):
     model.compile(optimizer='Adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
     # fits the model on batches with real-time data augmentation:
-    history = model.fit_generator(datagen.flow(deep_ddsm.DataTrain, deep_ddsm.LabelsTrain, batch_size=32),
-                        steps_per_epoch=len(deep_ddsm.DataTrain) / 32, epochs=20, validation_data=val_set)
+    history = model.fit_generator(datagen.flow(deep_ddsm.DataTrain, deep_ddsm.LabelsTrain, batch_size=cfg.batch_size),
+                                  steps_per_epoch=len(deep_ddsm.DataTrain) / cfg.batch_size, epochs=cfg.epochs,
+                                  validation_data=val_set)
 
     # Save model accuracy and validation accuracy at each epoch for model_x in a DataFrames
     accur_model_df['model_' + str(idx)] = history.history['accuracy']
@@ -104,16 +106,15 @@ for idx in range(num_models):
 # ************************************************************************* #
 # datagen has all the parameters of our x model
 textstr = '\n'.join((
-    'Rotation range: ' + str(datagen.rotation_range),
-    'Zoom range: ' + str(datagen.zoom_range),
-    'Width shift range: ' + str(datagen.width_shift_range),
-    'Height shift range: ' + str(datagen.height_shift_range),
-    'Shear range: ' + str(datagen.shear_range),
-    'Horizontal flip: ' + str(datagen.horizontal_flip),
-    'Vertical flip: ' + str(datagen.vertical_flip),
-    'Fill mode: ' + datagen.fill_mode))
-my_plot = accur_model_df.plot(title='testing')
-my_plot.text(x=0.05, y=0.95, s=textstr)
+    'Rotation range: ' + str(cfg.rotation_range),
+    'Zoom range: ' + str(cfg.zoom_range),
+    'Width shift range: ' + str(cfg.width_shift_range),
+    'Height shift range: ' + str(cfg.height_shift_range),
+    'Shear range: ' + str(cfg.shear_range),
+    'Horizontal flip: ' + str(cfg.horizontal_flip),
+    'Vertical flip: ' + str(cfg.vertical_flip),
+    'Fill mode: ' + cfg.fill_mode))
+my_plot = accur_model_df.plot(title=textstr)
 plt.show()
 
 
