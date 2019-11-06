@@ -71,7 +71,8 @@ class DeepImageBuilder:
     def get_data(self):
         data_attribute_names_dict = self.DATA_ATTRIBUTE_NAMES_DICT
         '''
-        Fix later. gets the data
+        Loads image data and labels for training, validation, or test data. Only loads data if the file path for each 
+        file isn't empty.
         :return:
         '''
         for key, file_path in self.PathsDict.items():
