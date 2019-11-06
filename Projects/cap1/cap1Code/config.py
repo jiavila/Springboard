@@ -1,8 +1,11 @@
+# This is the configuration file for MAIN_xf_learning.py.
+# Future: change into .json file to import everything as a dictionary
 # ************************************************************************* #
 # loading and pre-process training data params
 # ************************************************************************* #
 percent_train_set = 5  # create a smaller training set by specifying percentage of original to use. Set to 100 for all
-create_val_set_bool = True  # set True to make a validation set from sampled training set
+create_val_set_bool = True  # set True to make a validation set from sampled training set. Sampled data from training
+#                                 set is removed from training set.
 percent_val_set = 20        # percent of training set convert into validation.
 paths_dict = {
     'path_main': 'C:\\Users\\jesus\\Documents\\Springboard\\project_data\\ddsm-mammography',

@@ -1,9 +1,12 @@
+# This is the main script. This script loads and prepares data, imports and builds a keras CNN architecture, and trains
+# N number of models based on the imported keras CNN. Each of the models uses the same training data, but
+# ImageDataGenerator applies arbitrary transformations to the source training images. This is to evaluate how well the
+# model can generalize (i.e., evaluate its robustness to transformations in image data).
 # ************************************************************************* #
 # Importing
 # ************************************************************************* #
 import pandas as pd
 import matplotlib.pyplot as plt
-from matplotlib.ticker import FormatStrFormatter
 from keras.layers import Dense, GlobalAveragePooling2D
 from keras.applications import inception_v3
 from keras.preprocessing.image import ImageDataGenerator
@@ -13,7 +16,7 @@ import config as cfg
 
 
 # ************************************************************************* #
-# Loading and pre-process training data
+# Load and pre-process data with deepimgbuilder class
 # ************************************************************************* #
 # this step was edited b/c we already have our images in a numpy array
 deep_ddsm = DeepImageBuilder(paths_dict=cfg.paths_dict)
@@ -29,10 +32,6 @@ if cfg.create_val_set_bool:
 
 # Prepare our data for processing
 deep_ddsm.prep_data(data_choice=['training', 'validation'])
-
-
-# Put our validation set into a tuple to use later as validation during training
-# val_set =
 
 
 # ************************************************************************* #
@@ -99,6 +98,7 @@ for idx in range(num_models):
 # ************************************************************************* #
 # Plot model accuracies
 # ************************************************************************* #
+# FUTURE: change below to ("{key}".format(**dic)) once config is turned into a json file
 textstr = ''.join((
     'Rotation range = ' + str(cfg.rotation_range),
     ', Zoom range = ' + str(cfg.zoom_range),

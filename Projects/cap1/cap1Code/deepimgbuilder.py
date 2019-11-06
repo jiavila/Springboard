@@ -7,7 +7,8 @@ import pandas as pd
 class DeepImageBuilder:
     '''
         A deep learning class for transfer learning using pre-built keras models that were built from rgb images. This
-        class helps loading and preparing data in the right format for keras models.
+        class helps loading and preparing data in the right format for keras models. For example, it transforms data
+        from grayscale images to rgb.
     '''
 
     # A dictionary to match class attributes to data name variables. Primarily used in for loops within class methods.
@@ -84,7 +85,7 @@ class DeepImageBuilder:
     def prep_data(self, data_choice):
         '''
         Prepare data by converting images from gray scale NxNx1 to rgb NxNx3. This is done because the imported keras
-        models were trained with rgb images.
+        models were trained with rgb images. In addition, one-hot encode labels if it's necessary.
         Future: generalize storing data to self like get_data() method by using DATA_ATTRIBUTE_NAMES_DICT
         :param data_choice: a list that contains 'training', 'test', and/or 'validation'. Data preparation will apply
                             to data stored in corresponding attributes.
