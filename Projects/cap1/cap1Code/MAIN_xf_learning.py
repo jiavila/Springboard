@@ -3,6 +3,7 @@
 # ************************************************************************* #
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.ticker import FormatStrFormatter
 from keras.layers import Dense, GlobalAveragePooling2D
 from keras.applications import inception_v3
 from keras.preprocessing.image import ImageDataGenerator
@@ -15,7 +16,7 @@ import config as cfg
 # Loading and pre-process training data
 # ************************************************************************* #
 # this step was edited b/c we already have our images in a numpy array
-deep_ddsm = DeepImageBuilder(path_main=cfg.path_main)
+deep_ddsm = DeepImageBuilder(paths_dict=cfg.paths_dict)
 deep_ddsm.get_data()
 
 # Get a subsample of the data and store in our object
@@ -31,7 +32,7 @@ deep_ddsm.prep_data(data_choice=['training', 'validation'])
 
 
 # Put our validation set into a tuple to use later as validation during training
-val_set = (deep_ddsm.DataVal, deep_ddsm.LabelsVal)
+# val_set =
 
 
 # ************************************************************************* #
@@ -89,7 +90,7 @@ for idx in range(num_models):
     # fits the model on batches with real-time data augmentation:
     history = model.fit_generator(datagen.flow(deep_ddsm.DataTrain, deep_ddsm.LabelsTrain, batch_size=cfg.batch_size),
                                   steps_per_epoch=len(deep_ddsm.DataTrain) / cfg.batch_size, epochs=cfg.epochs,
-                                  validation_data=val_set)
+                                  validation_data=(deep_ddsm.DataVal, deep_ddsm.LabelsVal))
 
     # Save model accuracy and validation accuracy at each epoch for model_x in a DataFrames
     accur_model_df['model_' + str(idx)] = history.history['accuracy']
@@ -98,14 +99,15 @@ for idx in range(num_models):
 # ************************************************************************* #
 # Plot model accuracies
 # ************************************************************************* #
-textstr = '\n'.join((
-    'Rotation range: ' + str(cfg.rotation_range),
-    'Zoom range: ' + str(cfg.zoom_range),
-    'Width shift range: ' + str(cfg.width_shift_range),
-    'Height shift range: ' + str(cfg.height_shift_range),
-    'Shear range: ' + str(cfg.shear_range),
-    'Horizontal flip: ' + str(cfg.horizontal_flip),
-    'Vertical flip: ' + str(cfg.vertical_flip),
-    'Fill mode: ' + cfg.fill_mode))
-my_plot = accur_model_df.plot(title=textstr)
+textstr = ''.join((
+    'Rotation range = ' + str(cfg.rotation_range),
+    ', Zoom range = ' + str(cfg.zoom_range),
+    ', Width shift range: ' + str(cfg.width_shift_range),
+    ', Height shift range: ' + str(cfg.height_shift_range),
+    ', Shear range: ' + str(cfg.shear_range),
+    ', Horizontal flip: ' + str(cfg.horizontal_flip),
+    ', Vertical flip: ' + str(cfg.vertical_flip),
+    ', Fill mode: ' + cfg.fill_mode))
+accur_model_df.plot(title='Model self accuracy per epoch' + '\n' + textstr)
+accur_val_df.plot(title='Validation accuracy of each model per epoch' + '\n' + textstr)
 plt.show()

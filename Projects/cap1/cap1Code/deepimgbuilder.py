@@ -6,17 +6,28 @@ import pandas as pd
 
 class DeepImageBuilder:
     '''
-        A deep learning class for transfer learning using pre-built keras models from rgb images.
+        A deep learning class for transfer learning using pre-built keras models that were built from rgb images. This
+        class helps loading and preparing data in the right format for keras models.
     '''
+
+    # A dictionary to match class attributes to data name variables. Primarily used in for loops within class methods.
+    DATA_ATTRIBUTE_NAMES_DICT = {
+        'path_data_train': 'DataTrain',
+        'path_labels_train': 'LabelsTrain',
+        'path_data_test': 'DataTest',
+        'path_labels_test': 'LabelsTest',
+        'path_data_val': 'DataVal',
+        'path_labels_val': 'LabelsVal'}
+
     def __init__(self, paths_dict):
-        self.self.PathsDict = self.set_paths(self, paths_dict, nargout=1)  # set the dictionary of paths.
+        self.PathsDict = self.set_paths(paths_dict, nargout=1)  # set the dictionary of paths.
         self.DataTrain = np.empty(shape=(100, 10, 10, 1))  # initialize with empty numpy array
         self.DataTest = np.empty(shape=(10, 10, 10, 1))  # initialize with empty numpy array
-        self.DataVal = np.empty(shape=(10, 10, 10, 1))  # validation data. this can be created with get_sample method
+        self.DataVal = np.empty(shape=(10, 10, 10, 1))  # validation data. can be created with self.create_val_set()
         self.LabelsTrain = np.empty(shape=self.DataTrain.shape[0])
         self.LabelsTest = np.empty(shape=self.DataTest.shape[0])
         self.LabelsVal = np.empty(shape=self.DataVal.shape[0])
-        self.PathCurrent = ''
+        self.PathCurrent = os.path.dirname(os.path.realpath(__file__))  # path where this file is opened
         self.PathSampleImages = ''
         self.EncoderTrain = LabelEncoder()
         self.EncoderTest = LabelEncoder()
@@ -32,12 +43,20 @@ class DeepImageBuilder:
             path_labels_train: relative path to the training labels. Format should be numpy array (.npy)
             path_data_test, path_labels_test, path_data_val, path_labels_val: similar to training paths. If not
                 available, set to ''
+            Example:
+                paths_dict = {
+                    'path_main': 'C:\\Users\\jesus\\Documents\\Springboard\\project_data\\ddsm-mammography',
+                    'path_data_train': 'cv10_data\\cv10_data.npy',
+                    'path_labels_train': 'cv10_labels.npy',
+                    'path_data_test': 'test10_data\\test10_data.npy',
+                    'path_labels_test': 'test10_labels.npy',
+                    'path_data_val': '',
+                    'path_labels_val': ''}
         :param nargout: Int. Output paths_dict if nargout = 1 (after checking key names). Do a self update
             (self.PathsDict) if 0.
         :return:
         '''
-        args = ('path_main', 'path_data_train', 'path_labels_train', 'path_data_test', 'path_labels_test',
-                'path_data_val', 'path_labels_val')
+        args = ('path_main',) + tuple(self.DATA_ATTRIBUTE_NAMES_DICT.keys())
         for key, value in paths_dict.items():
             if not(key in args):
                 raise ValueError(key, 'Not recognized. path keys must be one of the following:', args)
@@ -49,15 +68,15 @@ class DeepImageBuilder:
             ValueError(nargout, 'must be int 0 or 1')
 
     def get_data(self):
+        data_attribute_names_dict = self.DATA_ATTRIBUTE_NAMES_DICT
         '''
         Fix later. gets the data
         :return:
         '''
-        self.DataTrain = np.load(self.PathMain + '\\cv10_data\\cv10_data.npy')
-        self.LabelsTrain = np.load(os.path.join(self.PathMain, 'cv10_labels.npy'))
-        self.DataTest = np.load(self.PathMain + '\\test10_data\\test10_data.npy')
-        self.LabelsTest = np.load(os.path.join(self.PathMain, 'test10_labels.npy'))
-        self.PathCurrent = os.path.dirname(os.path.realpath(__file__))
+        for key, file_path in self.PathsDict.items():
+            if (file_path != '') & (type(file_path) == str) & (key != 'path_main'):
+                exec("self." + str(data_attribute_names_dict[key]) +
+                     r" = np.load(self.PathsDict['path_main'] + '\\'  + file_path)")
         self.PathSampleImages = os.path.join(self.PathCurrent, '../sample_imgs')
         print('Current path: ' + self.PathCurrent)
         print('Sample images path: ' + self.PathSampleImages)
@@ -66,6 +85,7 @@ class DeepImageBuilder:
         '''
         Prepare data by converting images from gray scale NxNx1 to rgb NxNx3. This is done because the imported keras
         models were trained with rgb images.
+        Future: generalize storing data to self like get_data() method by using DATA_ATTRIBUTE_NAMES_DICT
         :param data_choice: a list that contains 'training', 'test', and/or 'validation'. Data preparation will apply
                             to data stored in corresponding attributes.
         :return:
@@ -221,7 +241,7 @@ class DeepImageBuilder:
     @staticmethod
     def plot_history(history, datagen):
         """
-
+        Future: if it becomes necessary, create a static plotting method for the class
         :param history: keras.callbacks.callbacks.History object, output from keras.models.Model.fit_generator()
         :param datagen: keras.preprocessing.image.ImageDataGenerator, the generator object that was used when fitting
                         Model.fit_gerator(). Use this to get parameters.
