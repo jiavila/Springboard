@@ -22,14 +22,14 @@ class DeepImageBuilder:
 
     def __init__(self, paths_dict):
         self.PathsDict = self.set_paths(paths_dict, nargout=1)  # set the dictionary of paths.
+        self.PathCurrent = os.path.dirname(os.path.realpath(__file__))  # path where this file is opened
+        self.PathSampleImages = os.path.join(self.PathCurrent, '../sample_imgs')
         self.DataTrain = np.empty(shape=(100, 10, 10, 1))  # initialize with empty numpy array
         self.DataTest = np.empty(shape=(10, 10, 10, 1))  # initialize with empty numpy array
         self.DataVal = np.empty(shape=(10, 10, 10, 1))  # validation data. can be created with self.create_val_set()
         self.LabelsTrain = np.empty(shape=self.DataTrain.shape[0])
         self.LabelsTest = np.empty(shape=self.DataTest.shape[0])
         self.LabelsVal = np.empty(shape=self.DataVal.shape[0])
-        self.PathCurrent = os.path.dirname(os.path.realpath(__file__))  # path where this file is opened
-        self.PathSampleImages = ''
         self.EncoderTrain = LabelEncoder()
         self.EncoderTest = LabelEncoder()
         self.EncoderVal = LabelEncoder()
@@ -79,9 +79,21 @@ class DeepImageBuilder:
             if (file_path != '') & (type(file_path) == str) & (key != 'path_main'):
                 exec("self." + str(data_attribute_names_dict[key]) +
                      r" = np.load(self.PathsDict['path_main'] + '\\'  + file_path)")
-        self.PathSampleImages = os.path.join(self.PathCurrent, '../sample_imgs')
-        print('Current path: ' + self.PathCurrent)
-        print('Sample images path: ' + self.PathSampleImages)
+
+    def show_sample_class_images(self, num_classes=self.NumClasses, display_images=True, save_images=False):
+        '''
+        FUTURE: create a method that shows a sample image from each class/category.
+        :param num_classes:
+        :param display_images:
+        :param save_images:
+        :return:
+        '''
+
+        # *************************************************************#
+        # Get the indeces for the differen types of classes. Create static method from "sample for each type of class"
+        # in static method get_sample
+        if save_images:
+            print('Sample class images will be saved in: ' + self.PathSampleImages)
 
     def prep_data(self, data_choice):
         '''
