@@ -23,7 +23,7 @@ class DeepImageBuilder:
     def __init__(self, paths_dict):
         self.PathsDict = self.set_paths(paths_dict, nargout=1)  # set the dictionary of paths.
         self.PathCurrent = os.path.dirname(os.path.realpath(__file__))  # path where this file is opened
-        self.PathSampleImages = os.path.join(self.PathCurrent, '../sample_imgs')
+        self.PathSampleImages = os.path.join(self.PathCurrent, '../sample_imgs')  # path for saved sample class images
         self.DataTrain = np.empty(shape=(100, 10, 10, 1))  # initialize with empty numpy array
         self.DataTest = np.empty(shape=(10, 10, 10, 1))  # initialize with empty numpy array
         self.DataVal = np.empty(shape=(10, 10, 10, 1))  # validation data. can be created with self.create_val_set()
@@ -80,7 +80,7 @@ class DeepImageBuilder:
                 exec("self." + str(data_attribute_names_dict[key]) +
                      r" = np.load(self.PathsDict['path_main'] + '\\'  + file_path)")
 
-    def show_sample_class_images(self, num_classes=self.NumClasses, display_images=True, save_images=False):
+    def show_sample_class_images(self, num_classes, display_images=True, save_images=False):
         '''
         FUTURE: create a method that shows a sample image from each class/category.
         :param num_classes:
