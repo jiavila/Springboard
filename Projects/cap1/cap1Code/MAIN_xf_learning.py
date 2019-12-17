@@ -1,7 +1,11 @@
-# This is the main script. This script loads and prepares data, imports and builds a keras CNN architecture, and trains
+"""
+Main Transfer Learning
+----------------------
+This is the main script. This script loads and prepares data, imports and builds a keras CNN architecture, and trains
 # N number of models based on the imported keras CNN. Each of the models uses the same training data, but
 # ImageDataGenerator applies arbitrary transformations to the source training images. This is to evaluate how well the
 # model can generalize (i.e., evaluate its robustness to transformations in image data).
+"""
 # ************************************************************************* #
 # Importing
 # ************************************************************************* #
