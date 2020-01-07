@@ -10,3 +10,12 @@ class DeepDip():
     def __init__(self, deep_image_builder=None):
         if type(deep_image_builder) is DeepImageBuilder:
             self.Dib = deep_image_builder
+
+    def adjust_exposure(self):
+        """
+        Adjust the exposure of the images stored in DeepImageBuilder
+        objects.
+        :return:
+        """
+
+

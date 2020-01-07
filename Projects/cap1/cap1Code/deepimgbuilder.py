@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.preprocessing import LabelEncoder
 from keras.utils import np_utils
 import pandas as pd
+from skimage import exposure as xp
 
 class DeepImageBuilder:
     '''
@@ -95,25 +96,18 @@ class DeepImageBuilder:
         if save_images:
             print('Sample class images will be saved in: ' + self.PathSampleImages)
 
-    def prep_data(self, data_choice):
-        '''
-        Prepare data by converting images from gray scale NxNx1 to rgb NxNx3. This is done because the imported keras
-        models were trained with rgb images. In addition, one-hot encode labels if it's necessary.
-        Future: generalize storing data to self like get_data() method by using DATA_ATTRIBUTE_NAMES_DICT
-        :param data_choice: a list that contains 'training', 'test', and/or 'validation'. Data preparation will apply
-                            to data stored in corresponding attributes.
-        :return:
-        '''
-
+    def check_data_choice(self, data_choice: list = None):
         # *************************************************************#
         # Check data_choice type if all the strings in data_choice are correct
         if type(data_choice) != list:
-            raise TypeError("data_choice must be a list. List must contain 'training', 'test', and/or 'validation'")
+            raise TypeError(
+                "data_choice must be a list. List must contain 'training', 'test', and/or 'validation'")
 
         for entry in data_choice:
-            if not(entry in ['training', 'test', 'validation']):
-                raise ValueError(entry + "not recognized. data_choice list can only contain 'training', 'test', and/or "
-                                         "'validation'.")
+            if not (entry in ['training', 'test', 'validation']):
+                raise ValueError(
+                    entry + "not recognized. data_choice list can only contain 'training', 'test', and/or "
+                            "'validation'.")
 
         # *************************************************************#
         # Get the corresponding data and training labels
@@ -135,6 +129,21 @@ class DeepImageBuilder:
             labels_list.append(self.LabelsVal)
             data_choice_tracker.append('Val')
             print("Selected validation set to prep.")
+
+        return data_list, labels_list, data_choice_tracker
+
+    def prep_data(self, data_choice):
+        '''
+        Prepare data by converting images from gray scale NxNx1 to rgb NxNx3. This is done because the imported keras
+        models were trained with rgb images. In addition, one-hot encode labels if it's necessary.
+        Future: generalize storing data to self like get_data() method by using DATA_ATTRIBUTE_NAMES_DICT
+        :param data_choice: a list that contains 'training', 'test', and/or 'validation'. Data preparation will apply
+                            to data stored in corresponding attributes.
+        :return:
+        '''
+
+        data_list, labels_list, data_choice_tracker = \
+            self.check_data_choice(data_choice=data_choice)
 
         # *************************************************************#
         # Loop through data lists and prepare data if it's needed
@@ -169,11 +178,47 @@ class DeepImageBuilder:
                 print("Converting labels to categorical (one-hot encoded)")
                 labels = np_utils.to_categorical(labels)
 
+            # Store arguments into respective properties
+            self.store_loop_data(data, labels, suffix)
+
+    def adjust_exposure(self, data_choice):
+
+        # Check data choice
+        data_list, labels_list, data_choice_tracker = \
+            self.check_data_choice(data_choice=data_choice)
+
+        # *************************************************************#
+        # Loop through data lists and adjust exposure
+        for idx, choice in enumerate(data_choice_tracker):
             # *************************************************************#
-            # Store current variables in respective attributes
-            exec("self.Data" + suffix + " = data")
-            exec("self.Labels" + suffix + " = labels")
-            print("Storing prepped data in self.Data" + suffix + " and labels in self.Labels" + suffix)
+            # Assign current variables
+            data = data_list[idx]
+            labels = labels_list[idx]
+            suffix = choice
+
+            # 
+
+            # Store arguments into respective properties
+            self.store_loop_data(data, labels, suffix)
+
+    @staticmethod
+    def store_loop_data(data, labels, suffix):
+        """
+        Store arguments into respective properties.
+
+        This is typically run inside a loop, where each argument is the
+        current value.
+
+        :param data:
+        :param labels:
+        :param suffix:
+        :return:
+        """
+
+        exec("self.Data" + suffix + " = data")
+        exec("self.Labels" + suffix + " = labels")
+        print(
+            "Storing data in self.Data" + suffix + " and labels in self.Labels" + suffix)
 
     def create_smaller_train_set(self, percent):
         """
