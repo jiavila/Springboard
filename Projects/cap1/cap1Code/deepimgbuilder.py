@@ -3,7 +3,6 @@ import numpy as np
 from sklearn.preprocessing import LabelEncoder
 from keras.utils import np_utils
 import pandas as pd
-from skimage import exposure as xp
 
 class DeepImageBuilder:
     '''
@@ -163,7 +162,7 @@ class DeepImageBuilder:
                 print("...New shape of data: ", data.shape)
 
             # *************************************************************#
-            # converting our training labels to an NxM matrix
+            # convert our training labels to an NxM matrix
 
             # convert label strings to numerical
             if type(labels[0]) == str:
@@ -196,7 +195,7 @@ class DeepImageBuilder:
             labels = labels_list[idx]
             suffix = choice
 
-            # 
+            #
 
             # Store arguments into respective properties
             self.store_loop_data(data, labels, suffix)
