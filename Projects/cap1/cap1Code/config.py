@@ -9,6 +9,7 @@ create_val_set_bool = True  # set True to make a validation set from sampled tra
 percent_val_set = 20        # percent of training set convert into validation.
 paths_dict = {
     'path_main': 'C:\\Users\\jesus\\Documents\\Springboard\\project_data\\ddsm-mammography',
+        #
     'path_data_train': 'cv10_data\\cv10_data.npy',
     'path_labels_train': 'cv10_labels.npy',
     'path_data_test': 'test10_data\\test10_data.npy',
