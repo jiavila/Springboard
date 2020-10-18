@@ -29,7 +29,8 @@ deep_ddsm.get_data()
 # Get a subsample of the data and store in our object
 num_samples_training_dict = deep_ddsm.create_smaller_train_set(percent=cfg.percent_train_set)
 
-# Get a validation set from sampled training set. This automatically removes these samples from our training set.
+# Get a validation set from sampled training set. This automatically removes
+# these samples from our training set.
 if cfg.create_val_set_bool:
     num_samples_val_dict = deep_ddsm.create_val_set(percent=cfg.percent_val_set)
 
@@ -39,7 +40,8 @@ deep_ddsm.prep_data(data_choice=['training', 'validation'])
 
 
 # ************************************************************************* #
-# Building the required model. Change later to import different learning model from config file
+# Building the required model. Change later to import different learning model
+# from config file
 # ************************************************************************* #
 base_model = inception_v3.InceptionV3(weights='imagenet', include_top=False)
 
@@ -68,7 +70,8 @@ for layer in model.layers[312:]:
 
 
 # ************************************************************************* #
-# Load data into ImageDataGenerator with parameters, compile, fit model. Do this N number of times
+# Load data into ImageDataGenerator with parameters, compile, fit model. Do
+# this N number of times
 # ************************************************************************* #
 # create dataframes that will hold accuracy and validation accuracy information from each model that's built
 accur_model_df = pd.DataFrame()
