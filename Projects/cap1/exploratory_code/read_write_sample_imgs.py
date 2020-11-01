@@ -4,8 +4,6 @@ from os import path
 import os
 import deepimgbuilder
 
-
-
 # run this only if the file isn't imported
 if __name__ == '__main__':
 
@@ -25,7 +23,4 @@ if __name__ == '__main__':
 
 
     # plt.show('im' + str(indx+1) + '') # Uncomment to display
-
-
-
     print('Saved sample images in ' + path.abspath(path_sample_imgs))
